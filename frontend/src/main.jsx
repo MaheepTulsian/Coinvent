@@ -8,8 +8,6 @@ import './index.css';
 
 import EventDetails from './components/EventDetails';
 import LandingPage from './pages/LandingPage/LandingPage';
-import SigninPage from './pages/Authentication/sign-in';
-import SignupPage from './pages/Authentication/sign-up';
 import LandComponents from './pages/LandingPage/LandComponents';
 import OrganisationDashboard from './pages/OrganizationDashboard/OrganisationDashboard';
 import UserDashboard from './pages/UserDashboard/UserDashboard';
@@ -26,10 +24,7 @@ const router= createBrowserRouter(
       <Route path="" element={<LandingPage />} >
 
         <Route path="/" element={<LandComponents />} />
-        {/* <Route path="/register" element={<Bifurcate />}/> */}
-        <Route path="/sign-in" element={<SigninPage />} />
-        <Route path="/sign-up" element={<SignupPage />} />
-
+      
         <Route path="/organise" element={<OrganisationDashboard />} >
           <Route path="/organise" element={<MyEvents />}/>
           <Route path="/organise/list" element={<ListEvent />}/>
