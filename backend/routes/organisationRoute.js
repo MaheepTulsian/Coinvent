@@ -83,4 +83,17 @@ organisationRoute.patch("/updateEvent/:id", async (req, res) => {
 });
 
 
-//
+//to show all the events of an organisation
+organisationRoute.get("/showEvents/:organisation_name", async (req, res) => {
+  try {
+    const organisation = await Organisation.findOne({ organisation_name: req.params.organisation_name });
+    if (!organisation) {
+      return res.status(404).json({ message: "Organization events not found" });
+    }
+    // Find all events that have an ID that is in the organisation's events array and return them as an array of events
+    const events = await Event.find({ _id: { $in: organisation.events } });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
