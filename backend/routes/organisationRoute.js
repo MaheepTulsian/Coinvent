@@ -1,13 +1,12 @@
 import express from "express";
-import Event from "../database/eventSchema";
-import Organisation from "../database/organisationSchema";
-import User from "../database/userSchema";
+import Event from "../database/eventSchema.js";
+import Organisation from "../database/organisationSchema.js";
+import User from "../database/userSchema.js";
 import  bodyParser from "body-parser";
 import multer from "multer";
 
 const organisationRoute = express.Router();
-userRoute.use(bodyParser.json());
-userRoute.use(bodyParser.urlencoded({ extended: true }));
+
 const upload = multer();
 
 //to create a new event
@@ -97,3 +96,6 @@ organisationRoute.get("/showEvents/:organisation_name", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+export default organisationRoute;

@@ -1,7 +1,7 @@
 import express from "express";
-import Event from "../database/eventSchema";
-import Organisation from "../database/organisationSchema";
-import User from "../database/userSchema";
+import Event from "../database/eventSchema.js";
+import Organisation from "../database/organisationSchema.js";
+import User from "../database/userSchema.js";
 import  bodyParser from "body-parser";
 import multer from "multer";
 
@@ -122,3 +122,4 @@ userRoute.get("/nft/:username", async (req, res) => {
   }
 });
 
+export default userRoute;

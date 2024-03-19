@@ -1,14 +1,16 @@
 import express from "express";
 import userRoute from "./routes/userRoute.js";
 import organisationRoute from "./routes/organisationRoute.js";
+import bodyParser from "body-parser";
 import cors from "cors";
-import dotenv from "dotenv";
-require("dotenv").config();
 const app = express();
 app.use(cors());
 
 const port = process.env.PORT || 3000;
-
+userRoute.use(bodyParser.json());
+userRoute.use(bodyParser.urlencoded({ extended: true }));
+organisationRoute.use(bodyParser.json());
+organisationRoute.use(bodyParser.urlencoded({ extended: true }));
 
 //routes
 app.use("/user", userRoute);
