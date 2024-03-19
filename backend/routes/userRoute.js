@@ -2,9 +2,10 @@ import express from "express";
 import Event from "../database/eventSchema.js";
 import Organisation from "../database/organisationSchema.js";
 import User from "../database/userSchema.js";
-import  bodyParser from "body-parser";
+import bodyParser from "body-parser";
 import multer from "multer";
-
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 const userRoute = express.Router();
 userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
@@ -14,7 +15,7 @@ const upload = multer();
 userRoute.get("/allevents", async (req, res) => {
   const currentDate = new Date();
   try {
-    const users = await Event.find({event_start_date: { $gt: currentDate }});
+    const users = await Event.find({ event_start_date: { $gt: currentDate } });
     res.json(users);
   } catch (error) {
     res.json({ message: error });
@@ -49,13 +50,10 @@ userRoute.get("/previousEvents/:username", async (req, res) => {
 
     // Sending all attended events in a single response
     res.json(attendedEventObjects);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
-
 
 //to find the favourite events of the user
 userRoute.get("/favouriteEvents/:username", async (req, res) => {
@@ -84,12 +82,10 @@ userRoute.get("/favouriteEvents/:username", async (req, res) => {
     }
     // Sending all favourite events in a single response
     res.json(favouriteEventObjects);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 //to find the nft image url of the user
 userRoute.get("/nft/:username", async (req, res) => {
@@ -116,10 +112,119 @@ userRoute.get("/nft/:username", async (req, res) => {
 
     // Sending all image URLs in a single response
     res.json(imageUrls);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+userRoute.post("/register", async (req, res) => {
+  const saltRounds = 10; // Number of salt rounds
+  try {
+    // Ensure req.body.password is defined and not null
+    if (!req.body.password) {
+      return res.status(400).send({ message: "Password is required" });
+    }
+
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const user = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+
+    const result = await user.save();
+
+    const { password, ...data } = await result.toJSON();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+userRoute.post("/login", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(400).send({
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = jwt.sign({ _id: user._id }, "secret");
+    console.log(token);
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+    try {
+      const cookie = req.cookies["jwt"];
+
+      const claims = jwt.verify(cookie, "secret");
+
+      if (!claims) {
+        return res.status(401).send({
+          message: "Unauthenticated",
+        });
+      }
+
+      const user = await User.findOne({ _id: claims._id });
+
+      const { password, ...data } = await user.toJSON();
+
+      //   res.send(data);
+      res.send({ message: "successfully login" });
+    } catch (error) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+    // res.send({
+    //   message: "Success",
+    // });
+  } catch (error) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+userRoute.get("/userid", async (req, res) => {
+  try {
+    const cookie = req.cookies["jwt"];
+
+    const claims = jwt.verify(cookie, "secret");
+
+    if (!claims) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+    res.send(claims);
+  } catch (error) {
+    return res.status(401).send({
+      message: "Unauthenticated",
+    });
+  }
+});
+
+userRoute.post("/logout", (req, res) => {
+  res.cookie("jwt", "", { maxAge: 0 });
+
+  res.send({
+    message: "Success",
+  });
+});
 export default userRoute;
