@@ -1,16 +1,14 @@
 import React from 'react'
-import Navbar from './../../components/Navbar'
-import Footer from './../../components/Footer'
+import { Outlet } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <Navbar />
-      <div>
-        Main
-      </div>
-      <Footer />
-    </>
+    <div>
+      <Outlet />
+    </div>
   )
 }
 

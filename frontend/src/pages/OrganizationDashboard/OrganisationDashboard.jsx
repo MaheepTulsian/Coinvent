@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from "react-router-dom";
 
-const UserDashboard = () => {
+const OrganisationDashboard = () => {
 
   return (
     <div className="h-screen w-full dark:bg-white bg-black dark:bg-grid-black/[0.2] bg-grid-white/[0.2] flex py-4 px-2">
@@ -32,4 +32,4 @@ const UserDashboard = () => {
   );
 }
 
-export default UserDashboard
+export default OrganisationDashboard
