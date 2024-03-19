@@ -14,7 +14,7 @@ const upload = multer();
 userRoute.get("/allevents", async (req, res) => {
   const currentDate = new Date();
   try {
-    const users = await Event.find({event_date: { $gt: currentDate }});
+    const users = await Event.find({event_start_date: { $gt: currentDate }});
     res.json(users);
   } catch (error) {
     res.json({ message: error });
@@ -121,3 +121,4 @@ userRoute.get("/nft/:username", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+

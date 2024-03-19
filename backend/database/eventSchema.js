@@ -7,11 +7,11 @@ const eventSchema = new mongoose.Schema({
      event_title:{
           type: String,
      },
-     event_date:{
+     event_start_date:{
           type: Date,
      },
-     no_of_days:{
-          type: Number,
+     event_start_date:{
+          type: Date,
      },
      event_description:{
           type: String,
