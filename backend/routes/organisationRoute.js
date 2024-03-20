@@ -4,7 +4,7 @@ import Organisation from "../database/organisationSchema.js";
 import User from "../database/userSchema.js";
 import  bodyParser from "body-parser";
 import multer from "multer";
-
+import bcrypt from "bcrypt";
 const organisationRoute = express.Router();
 
 const upload = multer();
@@ -28,7 +28,7 @@ organisationRoute.post("/createEvent/:organisation_name", async (req, res) => {
        max_ticket_per_person: req.body.max_ticket_per_person,
        wallet_address: req.body.wallet_address, 
      });
-     
+  
      try {
        const savedEvent = await event.save();
    
@@ -97,5 +97,96 @@ organisationRoute.get("/showEvents/:organisation_name", async (req, res) => {
   }
 });
 
+organisationRoute.post("/login", async (req, res) => {
+  try {
+    const user = await Organisation.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(400).send({
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET);
+    console.log(token);
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+    try {
+      const cookie = req.cookies["jwt"];
+
+      const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+
+      if (!claims) {
+        return res.status(401).send({
+          message: "Unauthenticated",
+        });
+      }
+
+      const user = await Organisation.findOne({ _id: claims._id });
+
+      // const { ...data } = await user.toJSON();
+     
+      res.send({ message: "successfully login" });
+    } catch (error) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+    // res.send({
+    //   message: "Success",
+    // });
+  } catch (error) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+organisationRoute.post("/register", async (req, res) => {
+  const saltRounds = 10; // Number of salt rounds
+  try {
+    // Ensure req.body.password is defined and not null
+    if (!req.body.password) {
+      return res.status(400).send({ message: "Password is required" });
+    }
+
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const user = new Organisation({
+      organisation_name: req.body.organisation_name,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+
+    const result = await user.save();
+
+    const { password, ...data } = await result.toJSON();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+organisationRoute.post("/logout", (req, res) => {
+  res.cookie("jwt", "", { maxAge: 0 });
+
+  res.send({
+    message: "Success",
+  });
+});
 
 export default organisationRoute;
