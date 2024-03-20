@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { createBrowserRouter } from 'react-router-dom';
 import { createRoutesFromElements } from 'react-router-dom';
@@ -50,12 +50,8 @@ const router= createBrowserRouter(
   )
 )
 
-ReactDOM.render(
-<React.StrictMode>
-  
-  <RouterProvider router={router}/>
-  
-</React.StrictMode>
-,
-  document.getElementById('root')
+createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <RouterProvider router={router}/>
+  </React.StrictMode>
 );

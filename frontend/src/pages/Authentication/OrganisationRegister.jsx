@@ -10,14 +10,13 @@ const LoginSignupComponent = () => {
 
   const formik = useFormik({
     initialValues: {
-      organisation_name: '',
-      name:'',
       email:'',
       password: ''
     },
     onSubmit: async (values) => {
       try {
-        const response = await fetch('http://localhost:3000/organisationregister', {
+        const url = isLogin ? 'http://localhost:3000/organisations/login' : 'http://localhost:3000/organisations/register';
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -29,12 +28,12 @@ const LoginSignupComponent = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
     
-        console.log('successfully Registered');
-        window.location.href = '/organise';
+        console.log(isLogin ? 'successfully Logged In' : 'successfully Registered');
+        window.location.href = '/organise'; // Redirect after successful login or registration
 
       } catch (error) {
         console.error('Error:', error);
-        alert('There was an error in registration. Please try again.');
+        alert('There was an error. Please try again.');
       }
     },    
   });
@@ -51,39 +50,38 @@ const LoginSignupComponent = () => {
           </h1>
         </div>
         <form onSubmit={formik.handleSubmit} className="bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4">
-          
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="organisation_name">
-              Organisation Name
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="organisation_name"
-              name="organisation_name"
-              type="text"
-              value={formik.values.organisation_name}
-              onChange={formik.handleChange}
-              placeholder="Organisation Name"
-              required={!isLogin} // Only required for signup
-            />
-          </div>
-          {!isLogin && (
+        {!isLogin && (
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                Email Address
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="organisation_name">
+                Organisation Name
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                name="email"
-                type="email"
-                value={formik.values.email}
+                id="organisation_name"
+                name="organisation_name"
+                type="text"
+                value={formik.values.organisation_name}
                 onChange={formik.handleChange}
-                placeholder="Email Address"
-                required
+                placeholder="Organisation Name"
+                required // This field is required for signup
               />
             </div>
           )}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              Email Address
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="email"
+              name="email"
+              type="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              placeholder="Email Address"
+              required
+            />
+          </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
               Password
