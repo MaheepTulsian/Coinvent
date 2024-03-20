@@ -117,7 +117,7 @@ userRoute.get("/nft/:username", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+//api for registering in the dashboard
 userRoute.post("/register", upload.none(), async (req, res) => {
   const saltRounds = 10; // Number of salt rounds
   try {
@@ -145,7 +145,7 @@ userRoute.post("/register", upload.none(), async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
-
+//api for login in user dashboard
 userRoute.post("/login", upload.none(), async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -184,14 +184,14 @@ userRoute.get("/userid", async (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, "secret");
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
 
     if (!claims) {
       return res.status(401).send({
         message: "Unauthenticated",
       });
     }
-    res.send(claims);
+    res.send(claims._id);
   } catch (error) {
     return res.status(401).send({
       message: "Unauthenticated",
@@ -206,4 +206,31 @@ userRoute.post("/logout", upload.none(), (req, res) => {
     message: "Successfully logout",
   });
 });
+
+//example schema for sending whole data
+userRoute.get("/user2", async (req, res) => {
+  // Add async here
+  try {
+    const cookie = req.cookies["jwt"];
+
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+
+    if (!claims) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+
+    const user = await User.findOne({ _id: claims._id });
+
+    // const { ...data } = await user.toJSON();
+    res.send(user);
+    // res.send({ message: "successfully login" });
+  } catch (error) {
+    return res.status(401).send({
+      message: "Unauthenticated",
+    });
+  }
+});
+
 export default userRoute;
