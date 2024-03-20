@@ -6,6 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectingDatabase from "./database/connect.js";
 import cookieParser from "cookie-parser";
+import uploadRoute  from './routes/routeUpload.js';
 dotenv.config({
   path: "./.env",
 });
@@ -34,6 +35,7 @@ app.use(
 //routes
 app.use("/user", userRoute);
 app.use("/organisations", organisationRoute);
+app.use("/api/users" , uploadRoute);
 
 const start = async () => {
   try {

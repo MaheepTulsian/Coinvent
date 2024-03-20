@@ -207,6 +207,7 @@ userRoute.post("/logout", upload.none(), (req, res) => {
   });
 });
 
+
 //example schema for sending whole data
 userRoute.get("/user2", async (req, res) => {
   // Add async here
@@ -234,3 +235,4 @@ userRoute.get("/user2", async (req, res) => {
 });
 
 export default userRoute;
+
