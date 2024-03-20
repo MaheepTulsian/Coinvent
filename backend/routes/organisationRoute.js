@@ -34,7 +34,6 @@ organisationRoute.post("/createEvent/:organisation_name", async (req, res) => {
        event_description: req.body.event_description,
        event_venue: req.body.event_venue,
        rule_regulation: req.body.rule_regulation,
-       eligibility: req.body.eligibility,
        cover_img_url: req.body.cover_img_url,
        nft_img_url: req.body.nft_img_url,
        max_tickets_available: req.body.max_tickets_available,
@@ -42,7 +41,6 @@ organisationRoute.post("/createEvent/:organisation_name", async (req, res) => {
        ticket_sold: 0,
        ticket_available: req.body.max_tickets_available,
        max_ticket_per_person: req.body.max_ticket_per_person,
-       wallet_address: req.body.wallet_address, 
      });
   
      try {
