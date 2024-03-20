@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const organisationSchema = new mongoose.Schema({
+     
      organisation_name:{
           type: String,
      },
