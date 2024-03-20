@@ -10,7 +10,31 @@ const userRoute = express.Router();
 userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
 const upload = multer();
+const getUserClaims = (req, res) => {
+  try {
+    const cookie = req.cookies["jwt"];
 
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+
+    if (!claims) {
+      return null;
+    }
+
+    return claims;
+  } catch (error) {
+    return null;
+  }
+};
+
+userRoute.get("/user2", async (req, res) => {
+  const userClaims = getUserClaims(req, res);
+  if (!userClaims) {
+    return res.status(401).send({
+      message: "Unauthenticated",
+    });
+  }
+  res.send(userClaims._id);
+});
 //to show all event to the users that are active
 userRoute.get("/allevents", async (req, res) => {
   const currentDate = new Date();
@@ -56,13 +80,18 @@ userRoute.get("/previousEvents/:username", async (req, res) => {
 });
 
 //to find the favourite events of the user
-userRoute.get("/favouriteEvents/:username", async (req, res) => {
+userRoute.get("/favouriteEvents", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const userClaims = getUserClaims(req, res);
+    if (!userClaims) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+    const user = await User.findOne({ _id: userClaims._id });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const favouriteEvents = user.favourites;
     const size = favouriteEvents.length;
 
@@ -80,8 +109,49 @@ userRoute.get("/favouriteEvents/:username", async (req, res) => {
         favouriteEventObjects.push(event);
       }
     }
-    // Sending all favourite events in a single response
     res.json(favouriteEventObjects);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+userRoute.get("/favouriteEvents1", async (req, res) => {
+  try {
+    const userClaims = getUserClaims(req, res);
+    if (!userClaims) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+
+    const user = await User.findOne({ _id: userClaims._id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // const { ...data } = await user.toJSON();
+    res.send(user);
+    // Check if the user has the 'favourites' property
+    // if (!user.favourites || !Array.isArray(user.favourites)) {
+    //   return res.json({ message: "No favourite events" });
+    // }
+
+    // const favouriteEvents = user.favourites;
+    // const size = favouriteEvents.length;
+
+    // if (size === 0) {
+    //   return res.json({ message: "No favourite events" });
+    // }
+
+    // // Array to hold favourite event objects
+    // const favouriteEventObjects = [];
+
+    // for (let i = 0; i < size; i++) {
+    //   const eventId = favouriteEvents[i];
+    //   const event = await Event.findById(eventId);
+    //   if (event) {
+    //     favouriteEventObjects.push(event);
+    //   }
+    // }
+    // res.json(favouriteEventObjects);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -129,7 +199,7 @@ userRoute.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const user = new User({
-      name: req.body.name,
+      username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
     });
@@ -166,7 +236,7 @@ userRoute.post("/login", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ _id: user._id }, "secret");
+    const token = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET);
     console.log(token);
     res.cookie("jwt", token, {
       httpOnly: true,
@@ -175,7 +245,7 @@ userRoute.post("/login", async (req, res) => {
     try {
       const cookie = req.cookies["jwt"];
 
-      const claims = jwt.verify(cookie, "secret");
+      const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
 
       if (!claims) {
         return res.status(401).send({
@@ -185,9 +255,18 @@ userRoute.post("/login", async (req, res) => {
 
       const user = await User.findOne({ _id: claims._id });
 
-      const { password, ...data } = await user.toJSON();
-
-      //   res.send(data);
+      const { ...data } = await user.toJSON();
+      // const userData = {
+      //   _id: user._id,
+      //   username: user.username,
+      //   name: user.name,
+      //   favourites: user.favourites,
+      //   email: user.email,
+      //   password: user.password,
+      //   nft: user.nft,
+      //   // Include other fields as needed
+      // };
+      // res.send(user);
       res.send({ message: "successfully login" });
     } catch (error) {
       return res.status(401).send({
@@ -205,7 +284,7 @@ userRoute.get("/userid", async (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, "secret");
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
 
     if (!claims) {
       return res.status(401).send({
@@ -227,4 +306,5 @@ userRoute.post("/logout", (req, res) => {
     message: "Success",
   });
 });
+
 export default userRoute;
