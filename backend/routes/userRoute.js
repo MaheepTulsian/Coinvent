@@ -118,7 +118,7 @@ userRoute.get("/nft/:username", async (req, res) => {
   }
 });
 
-userRoute.post("/register", async (req, res) => {
+userRoute.post("/register", upload.none(), async (req, res) => {
   const saltRounds = 10; // Number of salt rounds
   try {
     // Ensure req.body.password is defined and not null
@@ -146,7 +146,7 @@ userRoute.post("/register", async (req, res) => {
   }
 });
 
-userRoute.post("/login", async (req, res) => {
+userRoute.post("/login", upload.none(), async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
@@ -221,11 +221,11 @@ userRoute.get("/userid", async (req, res) => {
   }
 });
 
-userRoute.post("/logout", (req, res) => {
+userRoute.post("/logout", upload.none(), (req, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
 
   res.send({
-    message: "Success",
+    message: "Successfully logout",
   });
 });
 export default userRoute;
