@@ -167,37 +167,15 @@ userRoute.post("/login", upload.none(), async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ _id: user._id }, "secret");
+    const token = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET);
     console.log(token);
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-    try {
-      const cookie = req.cookies["jwt"];
 
-      const claims = jwt.verify(cookie, "secret");
-
-      if (!claims) {
-        return res.status(401).send({
-          message: "Unauthenticated",
-        });
-      }
-
-      const user = await User.findOne({ _id: claims._id });
-
-      const { password, ...data } = await user.toJSON();
-
-      //   res.send(data);
-      res.send({ message: "successfully login" });
-    } catch (error) {
-      return res.status(401).send({
-        message: "Unauthenticated",
-      });
-    }
-    // res.send({
-    //   message: "Success",
-    // });
+    // Send success message along with JWT token
+    res.send({ message: "Successfully logged in", token });
   } catch (error) {
     res.status(500).send({ message: "Internal server error" });
   }
