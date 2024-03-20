@@ -118,7 +118,6 @@ organisationRoute.get("/showEvents/:organisation_name", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 organisationRoute.post("/login", upload.none(), async (req, res) => {
   try {
     const user = await Organisation.findOne({ email: req.body.email });
@@ -146,30 +145,9 @@ organisationRoute.post("/login", upload.none(), async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-    try {
-      const cookie = req.cookies["jwt"];
 
-      const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
-
-      if (!claims) {
-        return res.status(401).send({
-          message: "Unauthenticated",
-        });
-      }
-
-      const user = await Organisation.findOne({ _id: claims._id });
-
-      // const { ...data } = await user.toJSON();
-
-      res.send({ message: "successfully login" });
-    } catch (error) {
-      return res.status(401).send({
-        message: "Unauthenticated",
-      });
-    }
-    // res.send({
-    //   message: "Success",
-    // });
+    // Send success message along with JWT token
+    res.send({ message: "Successfully logged in", token });
   } catch (error) {
     res.status(500).send({ message: "Internal server error" });
   }
@@ -200,6 +178,30 @@ organisationRoute.post("/register", upload.none(), async (req, res) => {
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send({ message: "Internal server error" });
+  }
+});
+organisationRoute.get("/user2", async (req, res) => {
+  // Add async here
+  try {
+    const cookie = req.cookies["jwt"];
+
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+
+    if (!claims) {
+      return res.status(401).send({
+        message: "Unauthenticated",
+      });
+    }
+
+    const user = await Organisation.findOne({ _id: claims._id });
+
+    // const { ...data } = await user.toJSON();
+    res.send(user);
+    // res.send({ message: "successfully login" });
+  } catch (error) {
+    return res.status(401).send({
+      message: "Unauthenticated",
+    });
   }
 });
 
