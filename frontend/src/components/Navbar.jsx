@@ -15,6 +15,10 @@ const Navbar = () => {
             <p className='text-white text-sm'>Participate in a Event</p>
           </Link>
         </div>
+
+        <Link to="/register" className="w-24 h-8 text-white font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full shadow-md hover:scale-105 duration-200 hover:drop-shadow-2xl hover:shadow-[#7dd3fc] hover:cursor-pointer">
+          Register
+        </Link>
       </div>
   )
 }

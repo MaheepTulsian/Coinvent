@@ -4,6 +4,7 @@ import Navbar from './../../components/Navbar'
 import Footer from './../../components/Footer'
 import { Boxes } from "./../../components/ui/background-boxes";
 import { cn } from "./../../utils/cn";
+import img1 from "./../../assets/img1.svg"
 
 export default function BackgroundBoxesDemo() {
   return (
@@ -14,12 +15,23 @@ export default function BackgroundBoxesDemo() {
 
       <Boxes />
 
-      <h1 className={cn("md:text-4xl text-xl text-white relative z-20")}>
+      {/* <h1 className={cn("md:text-4xl text-xl text-white relative z-20")}>
         Tailwind is Awesome
-      </h1>
-      <p className="text-center mt-2 text-neutral-300 relative z-20">
+      </h1> */}
+      {/* <p className="text-center mt-2 text-neutral-300 relative z-20">
         Framer motion is the best animation library ngl
-      </p>
+      </p> */}
+
+      <div className={cn("h-screen w-full flex")}>
+        <div className="w-1/2 flex flex-col items-center justify-center gap-3">
+          <h1 className="w-4/5 text-5xl text-white z-20 font-bold">Your next big</h1>
+          <h1 className="w-4/5 text-6xl text-white z-20 font-bold">Idea starts here</h1>
+          <p className="w-4/5 mt-10 text-xl text-white z-20 font-semibold">The ideal framework to learn how to manage all aspects of startup.</p>
+        </div>
+        <div className="w-1/2 flex items-center justify-center">
+          <img src={img1} alt="hero_img" className="z-20 w-4/5 "/>
+        </div>
+      </div>
 
     </div>
     <Footer />
