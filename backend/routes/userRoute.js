@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import multer from "multer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import organisationRoute from "./organisationRoute.js";
 const userRoute = express.Router();
 userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));

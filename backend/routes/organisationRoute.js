@@ -3,11 +3,27 @@ import Event from "../database/eventSchema.js";
 import Organisation from "../database/organisationSchema.js";
 import User from "../database/userSchema.js";
 import  bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
 import multer from "multer";
 import bcrypt from "bcrypt";
 const organisationRoute = express.Router();
 
 const upload = multer();
+const getUserClaims = (req, res) => {
+  try {
+    const cookie = req.cookies["jwt"];
+
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+
+    if (!claims) {
+      return null;
+    }
+
+    return claims;
+  } catch (error) {
+    return null;
+  }
+};
 
 //to create a new event
 organisationRoute.post("/createEvent/:organisation_name", async (req, res) => {
@@ -185,7 +201,7 @@ organisationRoute.post("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
 
   res.send({
-    message: "Success",
+    message: "Successfully logout",
   });
 });
 
