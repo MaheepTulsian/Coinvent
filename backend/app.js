@@ -6,13 +6,17 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectingDatabase from "./database/connect.js";
 import cookieParser from "cookie-parser";
-import uploadRoute  from './routes/routeUpload.js';
+import uploadRoute from "./routes/routeUpload.js";
 dotenv.config({
   path: "./.env",
 });
 const app = express();
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 const port = 3000 || process.env.PORT;
 userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
@@ -22,20 +26,12 @@ organisationRoute.use(bodyParser.urlencoded({ extended: true }));
 //jwt
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    credentials: true,
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:8080",
-      "http://localhost:4200",
-    ],
-  })
-);
+// app.use(cors());
+
 //routes
 app.use("/user", userRoute);
 app.use("/organisations", organisationRoute);
-app.use("/api/users" , uploadRoute);
+app.use("/api/users", uploadRoute);
 
 const start = async () => {
   try {
