@@ -36,7 +36,7 @@ const router= createBrowserRouter(
           <Route path="/organise" element={<MyEvents />}/>
           <Route path="/organise/list" element={<ListEvent />}/>
           <Route path="/organise/myEvents" element={<MyEvents />}/>
-          <Route path="/organise/eventdetails" element={<EventDetails />}/>
+          <Route path="/organise/myEvents/:id" element={<EventDetails />}/>
         </Route>
         
         <Route path="/user" element={<UserDashboard />} >
