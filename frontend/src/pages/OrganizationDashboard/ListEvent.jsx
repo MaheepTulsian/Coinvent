@@ -4,9 +4,9 @@ import { useFormik } from "formik";
 const SignUpForm = () => {
   const [coverImgUrl, setCoverImgUrl] = useState(null);
   const [nftImgUrl, setNftImgUrl] = useState(null);
-
+  
   async function uploadImageToCloudinary(imageFile) {
-    const apiUrl = "http://localhost:5000/api/users/upload";
+    const apiUrl = "http://localhost:3000/api/users/upload";
 
     try {
       const formData = new FormData();
@@ -28,30 +28,31 @@ const SignUpForm = () => {
       return null;
     }
   }
-  const handleImageUpload = async (imageFile, setImageUrl) => {
+
+  async function handleImageUpload(imageFile, setImageUrl) {
     try {
       const imageUrl = await uploadImageToCloudinary(imageFile);
       setImageUrl(imageUrl);
     } catch (error) {
       console.error("Error uploading image:", error);
     }
-  };
+  }
 
-  function upload(imageFile) {
-    if (!imageFile) {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    const inputName = e.target.name; // Get the name of the input that triggered the change
+
+    if (!file) {
       console.error("No file selected");
       return;
     }
-
-    uploadImageToCloudinary(imageFile)
-      .then((imageUrl) => {
-        console.log("Uploaded image URL:", imageUrl);
-        const image_url = imageUrl;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
+    // Call the appropriate function based on the input name
+    if (inputName === "cover_img_url") {
+      handleImageUpload(file, setCoverImgUrl);
+    } else if (inputName === "nft_img_url") {
+      handleImageUpload(file, setNftImgUrl);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -59,8 +60,8 @@ const SignUpForm = () => {
       description: "",
       rule_regulation: "",
       eligibility: "",
-      cover_img_url: null,
-      nft_img_url: null,
+      cover_img_url: "",
+      nft_img_url: "",
       max_tickets_available: "",
       ticket_price: "",
       max_ticket_per_person: "",
@@ -199,10 +200,7 @@ const SignUpForm = () => {
               id="cover_img_url"
               name="cover_img_url"
               accept="image/*"
-              onChange={(e) => {
-                formik.setFieldValue("cover_img_url", e.target.files[0]);
-                handleImageUpload(e.target.files[0], setCoverImgUrl);
-              }}
+              onChange={handleFileChange}
               className="text-indigo-400"
             />
           </div>
@@ -220,10 +218,7 @@ const SignUpForm = () => {
               id="nft_img_url"
               name="nft_img_url"
               accept="image/*"
-              onChange={(e) => {
-                formik.setFieldValue("nft_img_url", e.target.files[0]);
-                handleImageUpload(e.target.files[0], setNftImgUrl);
-              }}
+              onChange={handleFileChange}
               className="text-indigo-400"
             />
           </div>

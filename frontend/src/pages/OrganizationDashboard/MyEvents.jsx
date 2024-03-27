@@ -40,13 +40,11 @@ const MyEvents = () => {
     <div className="w-full overflow-y-scroll no-scrollbar rounded-3xl grid grid-cols-3 place-items-center gap-12 py-8">
       {opps.map(item => (
         <Card
-          // key={item._id}
           id={item._id}
           title={item.event_title}
           img={item.cover_img_url}
         />
       ))}
-
     </div>
   )
 }

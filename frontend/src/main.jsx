@@ -14,6 +14,7 @@ import UserRegister from './pages/Authentication/UserRegister';
 import LandComponents from './pages/LandingPage/LandComponents';
 import OrganisationDashboard from './pages/OrganizationDashboard/OrganisationDashboard';
 import UserDashboard from './pages/UserDashboard/UserDashboard';
+import Profile from './pages/OrganizationDashboard/Profile';
 import ListEvent from './pages/OrganizationDashboard/ListEvent';
 import MyEvents from './pages/OrganizationDashboard/MyEvents';
 import Events from './pages/UserDashboard/Events';
@@ -34,6 +35,7 @@ const router= createBrowserRouter(
 
         <Route path="/organise" element={<OrganisationDashboard />} >
           <Route path="/organise" element={<MyEvents />}/>
+          <Route path="/organise/profile" element={<Profile />}/>
           <Route path="/organise/list" element={<ListEvent />}/>
           <Route path="/organise/myEvents" element={<MyEvents />}/>
           <Route path="/organise/myEvents/:id" element={<EventDetails />}/>

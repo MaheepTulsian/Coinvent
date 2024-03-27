@@ -190,9 +190,44 @@ organisationRoute.post("/register", upload.none(), async (req, res) => {
 
     const result = await user.save();
 
-    const { password, ...data } = await result.toJSON();
+    // const { password, ...data } = await result.toJSON();
 
-    res.send(data);
+    // res.send(data);
+    try {
+      const user = await Organisation.findOne({ email: req.body.email });
+
+      if (!user) {
+        return res.status(404).send({
+          message: "User not found",
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
+
+      if (!isPasswordValid) {
+        return res.status(400).send({
+          message: "Invalid credentials",
+        });
+      }
+
+      const token = jwt.sign(
+        { _id: user._id },
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      console.log(token);
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
+
+      // Send success message along with JWT token
+      res.send({ message: "Successfully logged in", token });
+    } catch (error) {
+      res.status(500).send({ message: "Internal server error" });
+    }
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send({ message: "Internal server error" });

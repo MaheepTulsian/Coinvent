@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Sidebar from './Sidebar';
-import { Outlet } from "react-router-dom";
+import { Outlet , Link } from "react-router-dom";
+import { UserCircleIcon } from '@heroicons/react/24/outline'
+
 
 const OrganisationDashboard = () => {
 
@@ -10,11 +12,11 @@ const OrganisationDashboard = () => {
       <Sidebar />
       <div className="w-4/5 h-11/12 pb-2 overflow-y-scroll no-scrollbar rounded-t-3xl z-50">
         <div className=' w-full h-12 bg-gradient-to-b from-gray-800 to-gray-900 backdrop-filter backdrop-blur-lg mb-4 rounded-full sticky top-0 flex items-center justify-between'>
-          <div class='w-1/2 ml-2 rounded-full'>
-            <div class="relative flex items-center w-full h-8 rounded-full shadow-lg bg-gray-200 overflow-hidden">
-              <div class="grid place-items-center h-full w-12 text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div className='w-1/2 ml-2 rounded-full'>
+            <div className="relative flex items-center w-full h-8 rounded-full shadow-lg bg-gray-200 overflow-hidden">
+              <div className="grid place-items-center h-full w-12 text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
               <input
@@ -24,6 +26,11 @@ const OrganisationDashboard = () => {
               placeholder="Search something.." /> 
             </div>
           </div>
+
+          <Link to="/organise/profile" className='h-8 w-8 mr-2 bg-white rounded-full'>
+            <UserCircleIcon />
+          </Link>
+
         </div>
 
         <Outlet />
