@@ -14,7 +14,10 @@ const getUserClaims = (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+    const claims = jwt.verify(
+      cookie,
+      process.env.ACCESS_TOKEN_SECRET_ORGANISATION
+    );
 
     if (!claims) {
       return null;
@@ -56,7 +59,7 @@ organisationRoute.post("/createEvent", upload.none(), async (req, res) => {
     }
     // const cookie = req.cookies["jwt"];
 
-    // const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+    // const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET_ORGANISATION);
     const savedEvent = await event.save();
 
     // Find the organization by its name
@@ -157,7 +160,10 @@ organisationRoute.post("/login", upload.none(), async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET);
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_SECRET_ORGANISATION
+    );
     console.log(token);
     res.cookie("jwt", token, {
       httpOnly: true,
@@ -215,7 +221,7 @@ organisationRoute.post("/register", upload.none(), async (req, res) => {
 
       const token = jwt.sign(
         { _id: user._id },
-        process.env.ACCESS_TOKEN_SECRET
+        process.env.ACCESS_TOKEN_SECRET_ORGANISATION
       );
       console.log(token);
       res.cookie("jwt", token, {
@@ -238,7 +244,10 @@ organisationRoute.get("/user2", async (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET);
+    const claims = jwt.verify(
+      cookie,
+      process.env.ACCESS_TOKEN_SECRET_ORGANISATION
+    );
 
     if (!claims) {
       return res.status(401).send({
