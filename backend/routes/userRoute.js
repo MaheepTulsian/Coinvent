@@ -6,14 +6,31 @@ import bodyParser from "body-parser";
 import multer from "multer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import organisationRoute from "./organisationRoute.js";
+// import organisationRoute from "./organisationRoute.js";
 const userRoute = express.Router();
 userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
 const upload = multer();
 
+const getUserClaims = (req, res) => {
+  try {
+    const cookie = req.cookies["jwt"];
+
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET_USER);
+    if (!claims) {
+      return null;
+    }
+    return claims;
+  } catch (error) {
+    return null;
+  }
+};
 //to show all event to the users that are active
 userRoute.get("/allevents", async (req, res) => {
+  const claims = getUserClaims(req, res);
+  if (!claims) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   const currentDate = new Date();
   try {
     const users = await Event.find({ event_start_date: { $gt: currentDate } });
@@ -24,9 +41,13 @@ userRoute.get("/allevents", async (req, res) => {
 });
 
 //to find previous/history events of the user
-userRoute.get("/previousEvents/:username", async (req, res) => {
+userRoute.get("/previousEvents", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const claims = getUserClaims(req, res);
+    if (!claims) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
+    const user = await User.findOne({ _id: claims._id });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -57,9 +78,13 @@ userRoute.get("/previousEvents/:username", async (req, res) => {
 });
 
 //to find the favourite events of the user
-userRoute.get("/favouriteEvents/:username", async (req, res) => {
+userRoute.get("/favouriteEvents", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const claims = getUserClaims(req, res);
+    if (!claims) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
+    const user = await User.findOne({ _id: claims._id });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -89,9 +114,13 @@ userRoute.get("/favouriteEvents/:username", async (req, res) => {
 });
 
 //to find the nft image url of the user
-userRoute.get("/nft/:username", async (req, res) => {
+userRoute.get("/nft", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const claims = getUserClaims(req, res);
+    if (!claims) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
+    const user = await User.findOne({ _id: claims._id });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -160,13 +189,15 @@ userRoute.post("/register", upload.none(), async (req, res) => {
         });
       }
 
-      const token = jwt.sign({ _id: user._id }, ACCESS_TOKEN_SECRET_USER);
+      const token = jwt.sign(
+        { _id: user._id },
+        process.env.ACCESS_TOKEN_SECRET_USER
+      );
       console.log(token);
       res.cookie("jwt", token, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
-
       // Send success message along with JWT token
       res.send({ message: "Successfully logged in", token });
     } catch (error) {
@@ -199,13 +230,15 @@ userRoute.post("/login", upload.none(), async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ _id: user._id }, ACCESS_TOKEN_SECRET_USER);
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_SECRET_USER
+    );
     console.log(token);
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-
     // Send success message along with JWT token
     res.send({ message: "Successfully logged in", token });
   } catch (error) {
@@ -216,7 +249,7 @@ userRoute.get("/userid", async (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, ACCESS_TOKEN_SECRET_USER);
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET_USER);
 
     if (!claims) {
       return res.status(401).send({
@@ -245,7 +278,7 @@ userRoute.get("/user2", async (req, res) => {
   try {
     const cookie = req.cookies["jwt"];
 
-    const claims = jwt.verify(cookie, ACCESS_TOKEN_SECRET_USER);
+    const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET_USER);
 
     if (!claims) {
       return res.status(401).send({
