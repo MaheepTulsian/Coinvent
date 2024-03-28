@@ -3,6 +3,27 @@ import { useLocation , Link } from 'react-router-dom'
 import { HomeIcon , ArrowLeftEndOnRectangleIcon , GlobeAltIcon , CurrencyDollarIcon} from '@heroicons/react/24/outline'
 
 const Sidebar = () => {
+  const handleLogout = () => {
+    fetch("http://localhost:3000/user/logout", {
+      method: "POST",
+      credentials: "include", // Include cookies in the request
+    })
+      .then((response) => {
+        if (response.ok) {
+          // If logout was successful, redirect to login page or do any other necessary actions
+          // window.location.href = '../'; // Redirect to Landing page
+          console.log("Successful logout.");
+          window.location.href = "/";
+        } else {
+          // Handle error response
+          console.error("Logout failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Error occurred while logging out:", error);
+      });
+  };
+
 
   const { pathname } = useLocation();
   const subpage = pathname.split("/user/")?.[1];
@@ -50,10 +71,13 @@ const Sidebar = () => {
           <p className='text-black text-lg font-bold'>Connect Wallet</p>
         </button>
 
-        <Link to="../" className='w-full align-middle pt-5 border-t-2 flex items-center justify-center'>
+        <button 
+          onClick={handleLogout} 
+          className='w-full align-middle pt-5 border-t-2 flex items-center justify-center'
+        >
           <ArrowLeftEndOnRectangleIcon className='text-red-700 h-6 w-auto' />
           <p className='ml-1 text-red-700 font-semibold text-sm lg:text-lg'>Logout</p>
-        </Link>
+        </button>
       </div>
     </div>
   );
