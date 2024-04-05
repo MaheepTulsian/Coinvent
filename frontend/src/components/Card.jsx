@@ -1,20 +1,48 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
-import { BookmarkIcon} from '@heroicons/react/24/outline'
+import React, { useState } from 'react';
+import { BookmarkIcon, BookmarkSlashIcon } from '@heroicons/react/24/outline';
+// import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Card = (props) => {
-  const link="/organise/myEvents/"+props.id;
+  const [bookmarked, setBookmarked] = useState(false);
+  const link = "./" + props.id;
+
+  const toggleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        // Call backend API to remove from favorites
+        // await axios.post('/api/favorites/remove', { id: props.id });
+        console.log("Remove from favourite API called");
+      } else {
+        // Call backend API to add to favorites
+        // await axios.post('/api/favorites/add', { id: props.id });
+        console.log("Add to favourite API called");
+      }
+      setBookmarked(!bookmarked);
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    }
+  };
+
   return (
-    <Link to={link} className="flex w-72 flex-col rounded-xl bg-gradient-to-b from-gray-800 to-gray-900 bg-clip-border text-white hover:shadow-md hover:shadow-white">
-      <img src={props.img} alt="" className=" mx-2 -mt-6 h-40 overflow-hidden rounded-xl" />
-      <div className="py-6 px-4 flex items-center justify-between">
-        <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
+    <div className="flex w-72 flex-col rounded-xl bg-gradient-to-b from-gray-800 to-gray-900 bg-clip-border text-white hover:shadow-md hover:shadow-white">
+      <Link to={link} className="mx-2 -mt-6 h-40 overflow-hidden rounded-xl">
+        <img src={props.img} alt="" className='rounded-xl'/>
+      </Link>
+      <div className="h-20 px-4 flex items-center justify-between">
+        <h5 className="mb-2 w-4/5 text-xl font-semibold text-blue-gray-900">
           {props.title}
         </h5>
-        <BookmarkIcon className='h-6' />
+        <div className="cursor-pointer z-30" onClick={toggleBookmark}>
+          {bookmarked ? (
+            <BookmarkIcon className="h-6 text-yellow-500" />
+          ) : (
+            <BookmarkSlashIcon className="h-6" />
+          )}
+        </div>
       </div>
-    </Link>
-  )
-}
+    </div>
+  );
+};
 
-export default Card
+export default Card;
