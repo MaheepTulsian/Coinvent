@@ -255,9 +255,7 @@ organisationRoute.get("/user2", async (req, res) => {
       });
     }
 
-    const user = await Organisation.findOne({ _id: claims._id }).populate(
-      "events"
-    );
+    const user = await Organisation.findOne({ _id: claims._id });
 
     // const { ...data } = await user.toJSON();
     res.send(user);

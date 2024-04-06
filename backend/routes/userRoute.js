@@ -311,6 +311,53 @@ userRoute.post("/logout", upload.none(), (req, res) => {
     message: "Successfully logout",
   });
 });
+//api for appending the no. of ticket
+userRoute.post(
+  "/updateTicket/:_id/:no_ticket",
+  upload.none(),
+  async (req, res) => {
+    try {
+      const claims = getUserClaims(req, res);
+      if (!claims) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const eventId = req.params._id;
+      const noTicket = parseInt(req.params.no_ticket);
+
+      // Update the ticket_available field by subtracting no_ticket from the existing value
+      const updatedEvent = await Event.findByIdAndUpdate(
+        eventId,
+        { $inc: { ticket_available: -noTicket } },
+        { new: true }
+      );
+
+      if (!updatedEvent) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      const user = await User.findOne({
+        _id: claims._id,
+      });
+
+      // Ensure organisation is found
+      if (!user) {
+        return res.status(404).json({ message: "user not found" });
+      }
+
+      // Associate the event with the user by pushing its ID into the purchase array
+      user.events.push(updatedEvent._id);
+      user.nft.push(updatedEvent.nft_img_url);
+      await user.save();
+      res.status(200).json({
+        message: "Ticket count updated successfully",
+        updatedEvent,
+        user,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
 
 //example schema for sending whole data
 userRoute.get("/user2", async (req, res) => {
