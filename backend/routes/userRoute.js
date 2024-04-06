@@ -40,6 +40,19 @@ userRoute.get("/allevents", async (req, res) => {
   }
 });
 
+userRoute.get("/showallevents", async (req, res) => {
+  const claims = getUserClaims(req, res);
+  if (!claims) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 //to find previous/history events of the user
 userRoute.get("/previousEvents", async (req, res) => {
   try {
@@ -120,7 +133,7 @@ userRoute.get("/nft", async (req, res) => {
     if (!claims) {
       return res.status(401).json({ message: "unauthorized" });
     }
-    const user = await User.findOne({ _id: claims._id });
+    const user = await User.findOne({ _id: claims._id }).populate("favourites");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -146,6 +159,33 @@ userRoute.get("/nft", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+userRoute.get("/favouriteEvents1", async (req, res) => {
+  try {
+    const claims = getUserClaims(req, res);
+    if (!claims) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
+    const user = await User.findOne({ _id: claims._id }).populate("favourites");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user.favourites is defined and not null
+    if (!user.favourites || user.favourites.length === 0) {
+      return res.json({ message: "No favourite events" });
+    }
+
+    // Array to hold favourite event objects
+    const favouriteEventObjects = user.favourites;
+
+    // Sending all favourite events in a single response
+    res.json(favouriteEventObjects);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 //api for registering in the dashboard
 userRoute.post("/register", upload.none(), async (req, res) => {
   const saltRounds = 10; // Number of salt rounds
