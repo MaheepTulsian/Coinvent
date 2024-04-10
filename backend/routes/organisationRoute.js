@@ -31,10 +31,20 @@ const getUserClaims = (req, res) => {
 
 //to create a new event
 organisationRoute.post("/createEvent", upload.none(), async (req, res) => {
+  const claims = getUserClaims(req, res);
+
+  if (!claims) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const user = await Organisation.findOne({
+    _id: claims._id,
+  });
   const event = new Event({
+    organisation_name: user.organisation_name,
     event_title: req.body.event_title,
     event_date: req.body.event_date,
-    no_of_days: req.body.no_of_days,
+    event_start_date: req.body.event_start_date,
+    event_end_date: req.body.event_end_date,
     event_description: req.body.event_description,
     event_venue: req.body.event_venue,
     rule_regulation: req.body.rule_regulation,
@@ -48,18 +58,8 @@ organisationRoute.post("/createEvent", upload.none(), async (req, res) => {
     max_ticket_per_person: req.body.max_ticket_per_person,
     wallet_address: req.body.wallet_address,
   });
-  // const user = getUserClaims();
 
   try {
-    const claims = getUserClaims(req, res);
-
-    // Check if claims exist
-    if (!claims) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    // const cookie = req.cookies["jwt"];
-
-    // const claims = jwt.verify(cookie, process.env.ACCESS_TOKEN_SECRET_ORGANISATION);
     const savedEvent = await event.save();
 
     // Find the organization by its name
