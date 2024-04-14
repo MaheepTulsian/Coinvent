@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import connectingDatabase from "./database/connect.js";
 import cookieParser from "cookie-parser";
 import uploadRoute from "./routes/routeUpload.js";
+
 dotenv.config({
   path: "./.env",
 });

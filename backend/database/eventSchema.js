@@ -16,6 +16,7 @@ const eventSchema = new mongoose.Schema(
     },
     event_description: {
       type: String,
+      default: null,
     },
     event_venue: {
       type: String,
@@ -31,9 +32,6 @@ const eventSchema = new mongoose.Schema(
     },
     nft_img_url: {
       type: String,
-    },
-    max_tickets_available: {
-      type: Number,
     },
     ticket_price: {
       type: Number,

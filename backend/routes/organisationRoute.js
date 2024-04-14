@@ -42,7 +42,6 @@ organisationRoute.post("/createEvent", upload.none(), async (req, res) => {
   const event = new Event({
     organisation_name: user.organisation_name,
     event_title: req.body.event_title,
-    event_date: req.body.event_date,
     event_start_date: req.body.event_start_date,
     event_end_date: req.body.event_end_date,
     event_description: req.body.event_description,
@@ -51,7 +50,6 @@ organisationRoute.post("/createEvent", upload.none(), async (req, res) => {
     eligibility: req.body.eligibility,
     cover_img_url: req.body.cover_img_url,
     nft_img_url: req.body.nft_img_url,
-    max_tickets_available: req.body.max_tickets_available,
     ticket_price: req.body.ticket_price,
     ticket_sold: 0,
     ticket_available: req.body.max_tickets_available,
